@@ -1,0 +1,13 @@
+{
+    "displayName": "trace-app",
+    "appName": "trace-app",
+    "description": "test",
+    "lastModified": "2023-11-02T09:42:45.006Z",
+    "imgSourcePath": "",
+    "version": "1.0.0",
+    "appType": "apiOnly",
+    "templateName": "blank",
+    "createDate": "2023-11-02T09:42:35.198Z",
+    "analyticsId": "0f9263e4-0deb-8c4d-0ae6-f2e0057c03a5",
+    "createdStudioVersion": "9.2.0"
+}
