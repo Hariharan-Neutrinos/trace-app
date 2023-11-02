@@ -16,10 +16,7 @@ export class SchemaBuilder {
     private _basePathLength: number;
 
     static get instance() {
-        return (
-            SchemaBuilder._instance ||
-            (SchemaBuilder._instance = new SchemaBuilder())
-        );
+        return SchemaBuilder._instance || (SchemaBuilder._instance = new SchemaBuilder());
     }
 
     private constructor() {
@@ -36,25 +33,21 @@ export class SchemaBuilder {
 
         await Promise.allSettled([
             this.buildAPIPaths()
-                .then(sPaths => {
+                .then((sPaths) => {
                     this.swaggerDocument.paths = sPaths;
                 })
-                .catch(e => {
-                    log.error(
-                        '[SchemaBuilder] Failed to construct "swagger.path" docs object'
-                    );
+                .catch((e) => {
+                    log.error('[SchemaBuilder] Failed to construct "swagger.path" docs object');
                     log.error(e);
                 }),
             schemaBuilder
                 .build()
-                .then(([definitions,entitySchemaDefinitionKey]) => {
+                .then(([definitions, entitySchemaDefinitionKey]) => {
                     this.swaggerDocument.definitions = definitions;
                     this._entitySchemaDefinitionKey = entitySchemaDefinitionKey;
                 })
-                .catch(e => {
-                    log.error(
-                        '[SchemaBuilder] Failed to construct "swagger.definitions" docs object'
-                    );
+                .catch((e) => {
+                    log.error('[SchemaBuilder] Failed to construct "swagger.definitions" docs object');
                     log.error(e);
                 }),
         ]);
@@ -63,14 +56,12 @@ export class SchemaBuilder {
     private async getSwaggerFiles(dir: string) {
         const dirents = await fs.promises.readdir(dir, { withFileTypes: true });
         const files = await Promise.all(
-            dirents.map(dirent => {
+            dirents.map((dirent) => {
                 const res = resolve(dir, dirent.name);
                 return dirent.isDirectory()
                     ? this.getSwaggerFiles(res)
                     : {
-                          [basename(res)]: JSON.parse(
-                              fs.readFileSync(res).toString()
-                          ),
+                          [basename(res)]: JSON.parse(fs.readFileSync(res).toString()),
                       };
             })
         );
@@ -80,12 +71,12 @@ export class SchemaBuilder {
     private async buildAPIPaths() {
         let swaggerDocumentsPaths = {};
         const httpSwaggerDepsPath = join(process.cwd(), 'src/swaggerDeps');
-        const dmSwaggerDepsPath = join(process.cwd(), 'src/dmSwaggerDeps')
+        const dmSwaggerDepsPath = join(process.cwd(), 'src/dmSwaggerDeps');
         let httpSwaggerDeps = [];
         let dmSwaggerDeps = [];
         try {
             httpSwaggerDeps = await this.getSwaggerFiles(httpSwaggerDepsPath);
-        } catch (error) { }
+        } catch (error) {}
 
         try {
             dmSwaggerDeps = await this.getSwaggerFiles(dmSwaggerDepsPath);
@@ -104,10 +95,7 @@ export class SchemaBuilder {
 
     get dereffedSchema() {
         if (!this._dereffedSchema) {
-            this._dereffedSchema = jsonSchemaDeref(
-                this.swaggerDocument,
-                derefOptions
-            );
+            this._dereffedSchema = jsonSchemaDeref(this.swaggerDocument, derefOptions);
         }
         return this._dereffedSchema;
     }
@@ -116,31 +104,28 @@ export class SchemaBuilder {
     //     return this.dereffedSchema.definitions[schemaBuilder.erdToEntityName(erdName, entityName)];
     // }
 
-    getReqBodySchema(
-        httpPath: string,
-        method: 'put' | 'post' | 'delete' | 'patch'
-    ) {
+    getReqBodySchema(httpPath: string, method: 'put' | 'post' | 'delete' | 'patch') {
         const pathWithoutCtxPath = httpPath.slice(this._basePathLength);
-        const schema = this.dereffedSchema.paths[pathWithoutCtxPath][
-            method
-        ].parameters.find(p => p.in === 'body').schema;
+        const schema = this.dereffedSchema.paths[pathWithoutCtxPath][method].parameters.find(
+            (p) => p.in === 'body'
+        ).schema;
         let entityName;
         // getting entity name based on type from object
-        if(Object.keys(schema.properties).length > 0){
-            entityName = Object.keys(schema?.properties).filter(key=>key != 'filter')[0];
+        if (schema?.properties && Object.keys(schema.properties).length > 0) {
+            entityName = Object.keys(schema.properties).filter((key) => key != 'filter')[0];
         }
-        return {entityName:entityName, schema:schema};
+        return { entityName: entityName, schema: schema };
     }
 
     /**
-     * @description This function return the schema based on entity id 
+     * @description This function return the schema based on entity id
      * @param {string} entityId entity for which schema is required
      * @returns  schema based of entity id
      */
-    getEntitySchemaByEntityId(entityId){
-        const schema = this.dereffedSchema.definitions[this._entitySchemaDefinitionKey[entityId]]
-        if(schema) {
-            return schema
+    getEntitySchemaByEntityId(entityId) {
+        const schema = this.dereffedSchema.definitions[this._entitySchemaDefinitionKey[entityId]];
+        if (schema) {
+            return schema;
         }
     }
 }

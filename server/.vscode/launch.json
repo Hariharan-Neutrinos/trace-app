@@ -9,7 +9,6 @@
             "request": "launch",
             "name": "debug bhive-ssd",
             "program": "${workspaceFolder}/src/index.ts",
-            "preLaunchTask": "grunt: default",
             "outFiles": [
                 "${workspaceFolder}/build/**/*.js"
             ],

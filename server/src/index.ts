@@ -40,7 +40,9 @@ console.log('process.env.pm_id', process.env.pm_id);
 
     // create express app
     const app = express();
+    app.disable('x-powered-by');
     const baseApp = express();
+    baseApp.disable('x-powered-by');
 
     // Call midlewares
     app.use(helmet());

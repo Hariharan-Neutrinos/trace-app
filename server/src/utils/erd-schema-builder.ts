@@ -64,9 +64,12 @@ const getSchemas = async (details: EachItemCallBackParameter) => {
                 if (rel && rel.joinColumnName && rel.type !== 'm2o') {
                     let tget;
                     if (rel.type == 'o2m') {
-                        tget = `${property?.[__n__metadata__].relation?.targetEntity}_${schema.name}`;
+                        tget = `${propertyMetadata.relation.targetEntity}_${schema.name}`;
+                        if (schema.properties[rel.currentColumn]) {
+                            delete schema.properties[rel.currentColumn];
+                        }
                     } else {
-                        tget = property?.[__n__metadata__].relation?.targetEntity;
+                        tget = propertyMetadata.relation.targetEntity;
                     }
                     const $ref = $refBuilder(tget, erdSchemaDefs.metadata.name);
                     if (typeArrayRelationTypes.includes(propertyMetadata.relation.type)) {

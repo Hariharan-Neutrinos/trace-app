@@ -657,8 +657,7 @@ export class SDBaseService {
         generatedMiddleWares: any
     ) {
         const returnedMws = [];
-        const middleWares =
-            config?.['middleware']?.['sequences']?.['sequenceId']?.['type'];
+        const middleWares = config?.middlewares?.sequences?.[sequenceId]?.[type];
         if (Array.isArray(middleWares)) {
             middleWares.forEach(middleware => {
                 const serviceName = Object.getOwnPropertyNames(middleware)[0];
